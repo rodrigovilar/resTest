@@ -44,7 +44,7 @@ public class Resource {
 
 	public String get(String id) {
 		try {
-			getUnique.setURI(new URI(url + "/" + id));
+			getUnique = new HttpGet(url + "/" + id);
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(getUnique);
 			return EntityUtils.toString(response.getEntity());
