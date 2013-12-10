@@ -29,8 +29,8 @@ public abstract class TypedResource<T> {
 
 	protected abstract String toJson(T t);
 	
-	public int put(T t) {
-		return resource.put(toJson(t));
+	public int put(String id, T t) {
+		return resource.put(id, toJson(t));
 	}
 	
 	public int delete(String id) {

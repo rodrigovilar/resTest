@@ -34,7 +34,7 @@ public abstract class TypedResourceTest<T>{
 		assertEquals(t, newT);
 
 		T editedT = editObject(newT);
-		assertEquals(200, resource.put(editedT));
+		assertEquals(200, resource.put(ID.toString(), editedT));
 
 		List<T> ts2 = resource.get();
 		T editedT2 = resource.get(ID.toString());

@@ -65,7 +65,7 @@ public class Resource {
 
 	}
 
-	public int put(String json) {
+	public int put(String id, String json) {
 		try {
 			put.setURI(new URI(url + "/" + id));
 			put.setEntity(new StringEntity(json));
