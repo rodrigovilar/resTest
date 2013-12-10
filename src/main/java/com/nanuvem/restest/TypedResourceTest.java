@@ -1,4 +1,4 @@
-package br.ufpb.dce.bloomer.core.test;
+package com.nanuvem.restest;
 
 import static org.junit.Assert.assertEquals;
 
