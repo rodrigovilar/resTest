@@ -67,6 +67,7 @@ public class Resource {
 
 	public int put(String json) {
 		try {
+			put.setURI(new URI(url + "/" + id));
 			put.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(put);
