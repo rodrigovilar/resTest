@@ -21,6 +21,10 @@ public abstract class TypedResource<T> {
 		return toObject(resource.get(id));
 	}
 	
+	public String getConsulta(String atributo_consulta){
+		return  resource.getConsulta(atributo_consulta);
+	}
+	
 	protected abstract T toObject(String json);
 	
 	public int post(T t) {
@@ -36,4 +40,6 @@ public abstract class TypedResource<T> {
 	public int delete(String id) {
 		return resource.delete(id);
 	}
+	
+	
 }

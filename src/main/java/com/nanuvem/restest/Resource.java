@@ -23,6 +23,7 @@ public class Resource {
 	private HttpDelete delete;
 
 	private String url;
+	private String atributo_consulta;
 
 	public Resource(String url) {
 		this.url = url;
@@ -51,6 +52,21 @@ public class Resource {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public String getConsulta(String consulta) {
+
+		try {
+
+			getAll = new HttpGet(url + "?" + atributo_consulta + "="
+					+ consulta);
+			httpclient = HttpClients.createDefault();
+			HttpResponse response = httpclient.execute(getAll);
+			return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	public int post(String json) {
