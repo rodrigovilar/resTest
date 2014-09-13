@@ -7,32 +7,37 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public abstract class TypedResourceTest<T,S> {
+public abstract class TypedResourceTest<T> {
 
 	private TypedResource<T> resource;
-	private String atributo_consulta;
-	private TypedSubResource<S> subResource;
+	private String queryThatReturns1and2;
+	private String queryThatReturns3;
 
 	@Before
 	public void init() {
 		resource = createTypedResource();
+		queryThatReturns1and2 = getQueryThatReturns1and2();
+		queryThatReturns3 = getQueryThatReturns3();
 	}
 
 	protected abstract TypedResource<T> createTypedResource();
-	
-	protected abstract TypedSubResource<S> createTypedSubResource();
+
+	protected abstract String getQueryThatReturns1and2();
+
+	protected abstract String getQueryThatReturns3();
 
 	@Test
 	public void testingRestMethods() {
 		assertEquals(0, resource.get().size());
 
-		T t = createObjectResource();
+		T t = createObjectResource1();
 
 		assertEquals(201, resource.post(t));
 
 		List<T> ts = resource.get();
 
 		Object ID = getIdResource(ts.get(0));
+		
 		T newT = resource.get(ID.toString());
 		assertEquals(t, newT);
 
@@ -43,96 +48,62 @@ public abstract class TypedResourceTest<T,S> {
 		assertEquals(editedT, editedT2);
 
 		assertEquals(200, resource.delete(ID.toString()));
+		
+		assertEquals(0, resource.get().size());
 
 	}
 
 	@Test
 	public void testingRestSearch() throws Exception {
+
+		if (!resource.containsSearchParameter()) {
+			return;
+		}
+
 		assertEquals(0, resource.get().size());
 
-		T t1 = this.createObjectResource();
+		T t1 = this.createObjectResource1();
 		assertEquals(201, resource.post(t1));
 
-		T t2 = this.createObjectResource();
+		T t2 = this.createObjectResource2();
 		assertEquals(201, resource.post(t2));
 
-		T t3 = this.createObjectResource();
+		T t3 = this.createObjectResource3();
 		assertEquals(201, resource.post(t3));
 
 		List<T> tList = resource.get();
-
 		assertEquals(3, tList.size());
 
-		List<T> tListResultado = resource.toList(resource
-				.getConsulta(atributo_consulta));
+		tList = resource.toList(resource.search(queryThatReturns1and2));
+		assertEquals(2, tList.size());
+		
+		assertEquals(t1, tList.get(0));
+		assertEquals(t2, tList.get(1));
 
-		// como fazer esse assert da consulta?????????
+		tList = resource.toList(resource.search(queryThatReturns3));
+		assertEquals(1, tList.size());
+		assertEquals(t3, tList.get(0));
 
-		Object t1Id = getIdResource(tListResultado.get(0));
+		Object t1Id = getIdResource(tList.get(0));
 		assertEquals(200, resource.delete(t1Id.toString()));
 
-		Object t2Id = getIdResource(tListResultado.get(0));
+		Object t2Id = getIdResource(tList.get(0));
 		assertEquals(200, resource.delete(t2Id.toString()));
 
-		Object t3Id = getIdResource(tListResultado.get(0));
+		Object t3Id = getIdResource(tList.get(0));
 		assertEquals(200, resource.delete(t3Id.toString()));
 
 		assertEquals(0, resource.get().size());
 	}
-	
-	@Test
-	public void testingRestSubResource() throws Exception {
-		
-		assertEquals(0, resource.get().size());
-		
-		T t = createObjectResource();
-		assertEquals(201, resource.post(t));
-		List<T> ts = resource.get();
 
-		String ID = (String) getIdResource(ts.get(0));
-		
-		assertEquals(0, subResource.get(ID).size()); 
-		
-		S s = createObjectSubResource();
-		assertEquals(201, subResource.post(ID, s));			
-		List<S> sList = subResource.get(ID);
-		String IDSubResource1 =  (String) getIdSubResource(sList.get(0));
-		
-		S sPesquisado = subResource.get(ID, IDSubResource1);
-		
-		assertEquals(s, sPesquisado);
-		
-		S sEditado = editObjectSubResource(sPesquisado);
-		
-		assertEquals(200, subResource.put(ID, IDSubResource1, sEditado));
-		String IDSubResource2 =  (String) getIdSubResource(sList.get(0));
-		
-		S sPesquisado2 = subResource.get(ID, IDSubResource2);
-		String IDSubResource3 =  (String) getIdSubResource(sList.get(0));
-		
-		assertEquals( sPesquisado, sPesquisado2 );
-		
-		assertEquals(200,subResource.delete(ID, IDSubResource3));
-		assertEquals(0, subResource.get(ID).size()); 
-		
-		assertEquals(200, resource.delete(ID.toString()));
-		assertEquals(0, resource.get().size());
-		
-		
-	}
-	
-	
 	protected abstract T editObjectResoucer(T t);
 
-	protected abstract T createObjectResource();
+	protected abstract T createObjectResource1();
+
+	protected abstract T createObjectResource2();
+
+	protected abstract T createObjectResource3();
 
 	protected abstract Object getIdResource(T t);
-	
-	
-	protected abstract Object getIdSubResource(S s);
-	
-	protected abstract S createObjectSubResource();
-	
-	protected abstract S editObjectSubResource(S s);
 
 }

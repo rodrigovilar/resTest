@@ -7,6 +7,10 @@ public abstract class TypedResource<T> {
 	
 	private Resource resource;
 	
+	public TypedResource(String url, String searchParameter) {
+		this.resource = new Resource(url, searchParameter);
+	}
+	
 	public TypedResource(String url) {
 		this.resource = new Resource(url);
 	}
@@ -21,8 +25,8 @@ public abstract class TypedResource<T> {
 		return toObject(resource.get(id));
 	}
 	
-	public String getConsulta(String atributo_consulta){
-		return  resource.getConsulta(atributo_consulta);
+	public String search(String query){
+		return  resource.search(query);
 	}
 	
 	protected abstract T toObject(String json);
@@ -39,6 +43,10 @@ public abstract class TypedResource<T> {
 	
 	public int delete(String id) {
 		return resource.delete(id);
+	}
+
+	public boolean containsSearchParameter() {
+		return resource.containsSearchParameter();
 	}
 	
 	

@@ -6,7 +6,6 @@ public abstract class TypedSubResource<S> {
 
 	private SubResource subResource;
 	private String rootUrl;
-
 	private String subResourceUrl;
 	
 	public TypedSubResource(String rootUrl, String url2) {

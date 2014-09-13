@@ -18,19 +18,25 @@ public class Resource {
 
 	private HttpGet getAll;
 	private HttpGet getUnique;
+	private HttpGet search;
 	private HttpPost post;
 	private HttpPut put;
 	private HttpDelete delete;
 
 	private String url;
-	private String atributo_consulta;
+	private String searchParameter;
 
-	public Resource(String url) {
+	public Resource(String url, String searchParameter) {
 		this.url = url;
+		this.searchParameter = searchParameter;
 		getAll = new HttpGet(url);
 		post = new HttpPost(url);
 		put = new HttpPut(url);
 		delete = new HttpDelete(url);
+	}
+
+	public Resource(String url) {
+		this(url, null);
 	}
 
 	public String get() {
@@ -54,14 +60,14 @@ public class Resource {
 		}
 	}
 	
-	public String getConsulta(String consulta) {
+	public String search(String query) {
 
 		try {
 
-			getAll = new HttpGet(url + "?" + atributo_consulta + "="
-					+ consulta);
+			search = new HttpGet(url + "?" + searchParameter + "="
+					+ query);
 			httpclient = HttpClients.createDefault();
-			HttpResponse response = httpclient.execute(getAll);
+			HttpResponse response = httpclient.execute(search);
 			return EntityUtils.toString(response.getEntity());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -102,5 +108,9 @@ public class Resource {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public boolean containsSearchParameter() {
+		return searchParameter != null;
 	}
 }
