@@ -1,6 +1,6 @@
 package com.nanuvem.restest;
 
-import java.net.URI;
+
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -12,35 +12,29 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-public class Resource {
+public class SubResource {
 
 	private CloseableHttpClient httpclient;
 
 	private HttpGet getAll;
 	private HttpGet getUnique;
-	private HttpGet search;
 	private HttpPost post;
 	private HttpPut put;
 	private HttpDelete delete;
 
-	private String url;
-	private String searchParameter;
+	private String rootUrl;
 
-	public Resource(String url, String searchParameter) {
-		this.url = url;
-		this.searchParameter = searchParameter;
-		getAll = new HttpGet(url);
-		post = new HttpPost(url);
-		put = new HttpPut(url);
-		delete = new HttpDelete(url);
+	private String subResourceUrl;
+
+	public SubResource(String rootUrl, String subResourceUrl) {
+		this.rootUrl = rootUrl;
+		this.subResourceUrl = subResourceUrl;
 	}
 
-	public Resource(String url) {
-		this(url, null);
-	}
-
-	public String get() {
+	public String get(String resourceId) {
 		try {
+			getAll = new HttpGet(rootUrl + "/" + resourceId + "/"
+					+ subResourceUrl);
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(getAll);
 			return EntityUtils.toString(response.getEntity());
@@ -49,9 +43,10 @@ public class Resource {
 		}
 	}
 
-	public String get(String id) {
+	public String get(String resourceId, String subResourceId) {
 		try {
-			getUnique = new HttpGet(url + "/" + id);
+			getUnique = new HttpGet(rootUrl + "/" + resourceId + "/"
+					+ subResourceUrl + "/" + subResourceId);
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(getUnique);
 			return EntityUtils.toString(response.getEntity());
@@ -59,24 +54,12 @@ public class Resource {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public String search(String query) {
 
+	public int post(String resourceId, String json) {
 		try {
 
-			search = new HttpGet(url + "?" + searchParameter + "="
-					+ query);
-			httpclient = HttpClients.createDefault();
-			HttpResponse response = httpclient.execute(search);
-			return EntityUtils.toString(response.getEntity());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
-	public int post(String json) {
-		try {
+			post = new HttpPost(rootUrl + "/" + resourceId + "/"
+					+ subResourceUrl);
 			post.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(post);
@@ -87,9 +70,10 @@ public class Resource {
 
 	}
 
-	public int put(String id, String json) {
+	public int put(String idResource, String idSubResource, String json) {
 		try {
-			put.setURI(new URI(url + "/" + id));
+			put = new HttpPut(rootUrl + "/" + idResource + "/" + subResourceUrl
+					+ "/" + idSubResource);
 			put.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(put);
@@ -99,9 +83,10 @@ public class Resource {
 		}
 	}
 
-	public int delete(String id) {
+	public int delete(String idResource, String idSubresource) {
 		try {
-			delete.setURI(new URI(url + "/" + id));
+			delete = new HttpDelete(rootUrl + "/" + idResource + "/"
+					+ subResourceUrl + idSubresource);
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(delete);
 			return response.getStatusLine().getStatusCode();
@@ -110,7 +95,4 @@ public class Resource {
 		}
 	}
 
-	public boolean containsSearchParameter() {
-		return searchParameter != null;
-	}
 }
