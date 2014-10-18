@@ -75,25 +75,25 @@ public class Resource {
 
 	}
 
-	public int post(String json) {
+	public HttpResponse post(String json) {
 		try {
 			post.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(post);
-			return response.getStatusLine().getStatusCode();
+			return response;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
 	}
 
-	public int put(String id, String json) {
+	public HttpResponse put(String id, String json) {
 		try {
 			put.setURI(new URI(url + "/" + id));
 			put.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(put);
-			return response.getStatusLine().getStatusCode();
+			return response;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
