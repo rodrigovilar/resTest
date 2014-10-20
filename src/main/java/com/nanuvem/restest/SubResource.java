@@ -55,7 +55,7 @@ public class SubResource {
 		}
 	}
 
-	public int post(String resourceId, String json) {
+	public HttpResponse post(String resourceId, String json) {
 		try {
 
 			post = new HttpPost(rootUrl + "/" + resourceId + "/"
@@ -63,21 +63,21 @@ public class SubResource {
 			post.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(post);
-			return response.getStatusLine().getStatusCode();
+			return response;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
 	}
 
-	public int put(String idResource, String idSubResource, String json) {
+	public HttpResponse put(String idResource, String idSubResource, String json) {
 		try {
 			put = new HttpPut(rootUrl + "/" + idResource + "/" + subResourceUrl
 					+ "/" + idSubResource);
 			put.setEntity(new StringEntity(json));
 			httpclient = HttpClients.createDefault();
 			HttpResponse response = httpclient.execute(put);
-			return response.getStatusLine().getStatusCode();
+			return response;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -1,14 +1,17 @@
 package com.nanuvem.restest;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
 
 public abstract class TypedSubResource<S> {
 
 	private SubResource subResource;
-	private String rootUrl;
-	private String subResourceUrl;
 	
-	public TypedSubResource(String rootUrl, String url2) {
+	public TypedSubResource(String rootUrl, String subResourceUrl) {
 		this.subResource = new SubResource (rootUrl, subResourceUrl);
 	}
 
@@ -24,13 +27,17 @@ public abstract class TypedSubResource<S> {
 
 	protected abstract S toObject(String json);
 
-	public int post(String resourceId, S s) {
+	public S toObject(HttpResponse response) throws ParseException, IOException {
+		return toObject(EntityUtils.toString(response.getEntity()));
+	}
+	
+	public HttpResponse post(String resourceId, S s) {
 		return subResource.post(resourceId, toJson(s));
 	}
 
 	protected abstract String toJson(S s);
 
-	public int put(String idResource, String idSubResource, S s) {
+	public HttpResponse put(String idResource, String idSubResource, S s) {
 		return this.subResource.put(idResource, idSubResource, toJson(s));
 	}
 

@@ -2,8 +2,11 @@ package com.nanuvem.restest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,25 +30,39 @@ public abstract class TypedResourceTest<T> {
 	protected abstract String getQueryThatReturns3();
 
 	@Test
-	public void testingRestMethods() {
+	public void testingRestMethods() throws ParseException, IOException {
 		assertEquals(0, resource.get().size());
 
 		T t = createObjectResource1();
 
-		assertEquals(201, resource.post(t));
-
+		HttpResponse response = resource.post(t);
+		assertEquals(201, response.getStatusLine().getStatusCode());
+		T t2 = resource.toObject(response);
+		assertEquals(t, t2);
+		
 		List<T> ts = resource.get();
-
-		Object ID = getIdResource(ts.get(0));
+		assertEquals(1, ts.size());
+		assertEquals(t, ts.get(0));
+		
+		Object ID = getIdResource(t2);
 		
 		T newT = resource.get(ID.toString());
 		assertEquals(t, newT);
 
 		T editedT = editObjectResoucer(newT);
 		assertEquals(200, resource.put(ID.toString(), editedT));
-
-		T editedT2 = resource.get(ID.toString());
+		response = resource.put(ID.toString(), editedT);
+		assertEquals(200, response.getStatusLine().getStatusCode());
+		T editedT2 = resource.toObject(response);
 		assertEquals(editedT, editedT2);
+		
+		ts = resource.get();
+		assertEquals(1, ts.size());
+		assertEquals(editedT, ts.get(0));
+		
+		T editedT3 = resource.get(ID.toString());
+		assertEquals(editedT, editedT3);
+		
 
 		assertEquals(200, resource.delete(ID.toString()));
 		
@@ -63,13 +80,23 @@ public abstract class TypedResourceTest<T> {
 		assertEquals(0, resource.get().size());
 
 		T t1 = this.createObjectResource1();
-		assertEquals(201, resource.post(t1));
+		HttpResponse response = resource.post(t1);
+		assertEquals(201, response.getStatusLine().getStatusCode());
+		T t1rs = resource.toObject(response);
+		assertEquals(t1, t1rs);
+		
 
 		T t2 = this.createObjectResource2();
-		assertEquals(201, resource.post(t2));
+		response = resource.post(t2);
+		assertEquals(201, response.getStatusLine().getStatusCode());
+		T t2rs = resource.toObject(response);
+		assertEquals(t2, t2rs);
 
 		T t3 = this.createObjectResource3();
-		assertEquals(201, resource.post(t3));
+		response = resource.post(t3);
+		assertEquals(201, response.getStatusLine().getStatusCode());
+		T t3rs = resource.toObject(response);
+		assertEquals(t3, t3rs);
 
 		List<T> tList = resource.get();
 		assertEquals(3, tList.size());
